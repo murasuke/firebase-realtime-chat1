@@ -2,12 +2,12 @@ import React, {useState, useMemo, useEffect} from 'react';
 import db from './firebaseConfig';
 import './chat1.css';
 
-type Log = {
+type ChatLog = {
   key: string,
   name: string,
   msg: string,
   date: Date,
-}
+};
 
 
 /**
@@ -38,7 +38,7 @@ function getStrTime(time: any){
  * チャットコンポーネント(Line風)
  */
 const Chat1: React.FC = () => {
-  const [logs, setLogs] = useState<Log[]>([]);
+  const [chatLogs, setChatLogs] = useState<ChatLog[]>([]);
   const [msg, setMsg] = useState('');
   const userName = useMemo(() => getUName(), []);
   const messagesRef = useMemo(() => db.collection("chatroom").doc("room1").collection("messages"), []);
@@ -48,8 +48,9 @@ const Chat1: React.FC = () => {
     messagesRef.orderBy("date", "desc").limit(10).onSnapshot((snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added") {
-          // 追加
+          // チャットログへ追加
           addLog(change.doc.id, change.doc.data());
+          // 画面下部へスクロール
           window.scroll(0, document.documentElement.scrollHeight - document.documentElement.clientHeight)
         }
       });
@@ -65,8 +66,8 @@ const Chat1: React.FC = () => {
       key: id,
       ...data,
     };
-    // 時間順に並べるためsort
-    setLogs((prev) => [ ...prev, log,].sort( (a,b) => a.date.valueOf() - b.date.valueOf()));
+    // Firestoreから取得したデータは時間降順のため、表示前に昇順に並び替える
+    setChatLogs((prev) => [...prev, log,].sort((a,b) => a.date.valueOf() - b.date.valueOf()));
   }
 
   /**
@@ -88,8 +89,9 @@ const Chat1: React.FC = () => {
 
   return (
     <>
+      {/* チャットログ */}
       <div>      
-        {logs.map((item, i) => (
+        {chatLogs.map((item, i) => (
           <div className={userName===item.name? 'balloon_r': 'balloon_l'} key={item.key}>
             {userName===item.name? getStrTime(item.date): '' }
             <div className="faceicon">
@@ -102,7 +104,8 @@ const Chat1: React.FC = () => {
           </div>
         ))}
       </div>
-
+      
+      {/* メッセージ入力 */}
       <form className='chatform' onSubmit={e => { submitMsg();e.preventDefault() }}>
         <div>{userName}</div>       
           <input type="text" value={msg} onChange={(e) => setMsg(e.target.value)} />

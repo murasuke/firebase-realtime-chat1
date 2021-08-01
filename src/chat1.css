@@ -58,6 +58,10 @@
   border-left: 22px solid #99dddd;
 }
 
+body {
+  background-color:mintcream;
+}
+
 /* 追加分(form) */
 .chatform input[type="text"] {
   width: 300px;
