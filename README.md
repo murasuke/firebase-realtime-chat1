@@ -64,6 +64,8 @@ REACT_APP_APP_ID=XXXXXXXXXXXXXXXXXXX
 
 * firebaseConfig.ts
 
+Firebase SDKの初期化を行い`db`をエクスポートします。
+
 ```typescript
 import firebase from 'firebase';
 
@@ -92,6 +94,7 @@ Line風の見た目は[CSSだけでLINE風の「吹き出し」を作る方法](
 ### html部分
 
 チャットログは`ChatLog`型の配列です。自分の名前のログを右側に、他人を左側に表示するようにclass名を切り替えています。
+
 ```typescript
 type ChatLog = {
   key: string,
